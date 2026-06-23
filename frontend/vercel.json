@@ -11,8 +11,8 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/express"
+      "source": "/api/(.*)",
+      "destination": "/api/express?path=$1"
     }
   ],
   "crons": [

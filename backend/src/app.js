@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { frontendUrl } = require('./config/env');
 const { createSessionMiddleware } = require('./config/session');
+const vercelPathFix = require('./middleware/vercelPathFix');
 const errorHandler = require('./middleware/errorHandler');
 const { runInvoiceOverdueCheck, runAmcReminders } = require('./jobs/scheduler');
 
@@ -18,6 +19,7 @@ const notificationRoutes = require('./modules/notifications/routes');
 const app = express();
 
 app.set('trust proxy', 1);
+app.use(vercelPathFix);
 
 function resolveAllowedOrigins() {
   const origins = new Set([frontendUrl]);
