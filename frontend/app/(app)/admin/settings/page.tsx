@@ -41,7 +41,7 @@ function ImageUploadField({
         flexDirection: 'column',
       }}
     >
-      <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+      <Typography variant="subtitle2" sx={{ fontWeight: 700 }} gutterBottom>
         {label}
       </Typography>
       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
@@ -124,7 +124,7 @@ export default function OrgSettingsPage() {
         subtitle="Company profile, invoice branding, and defaults"
         actions={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {saved && <Typography color="success.main" fontWeight={600}>Saved!</Typography>}
+            {saved && <Typography color="success.main" sx={{ fontWeight: 600 }}>Saved!</Typography>}
             <Button variant="contained" startIcon={<SaveIcon />} onClick={save}>
               Save Settings
             </Button>
@@ -274,7 +274,7 @@ export default function OrgSettingsPage() {
               borderColor: alpha('#1565c0', 0.15),
             }}
           >
-            <Typography variant="subtitle2" fontWeight={700} gutterBottom>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }} gutterBottom>
               Invoice export preview
             </Typography>
             <Typography variant="body2" color="text.secondary">
