@@ -3,6 +3,7 @@ const cors = require('cors');
 const { frontendUrl } = require('./config/env');
 const { createSessionMiddleware } = require('./config/session');
 const vercelPathFix = require('./middleware/vercelPathFix');
+const { vercelPathGuard } = require('./middleware/vercelPathFix');
 const errorHandler = require('./middleware/errorHandler');
 const { runInvoiceOverdueCheck, runAmcReminders } = require('./jobs/scheduler');
 
@@ -20,6 +21,7 @@ const app = express();
 
 app.set('trust proxy', 1);
 app.use(vercelPathFix);
+app.use(vercelPathGuard);
 
 function resolveAllowedOrigins() {
   const origins = new Set([frontendUrl]);
@@ -64,11 +66,17 @@ app.get('/api/health/db', async (req, res) => {
   const pool = require('./db/pool');
   try {
     const { rows } = await pool.query('SELECT 1 AS ok');
-    res.json({ status: 'ok', db: 'connected', result: rows[0] });
+    res.json({
+      status: 'ok',
+      db: 'connected',
+      resolvedPath: req.url,
+      result: rows[0],
+    });
   } catch (err) {
     res.status(503).json({
       status: 'error',
       db: 'unreachable',
+      resolvedPath: req.url,
       message: err.message,
     });
   }

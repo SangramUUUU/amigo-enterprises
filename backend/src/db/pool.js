@@ -20,9 +20,10 @@ function createPoolConfig(connectionString = databaseUrl) {
   const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
   const config = {
     connectionString: normalized,
-    connectionTimeoutMillis: 8000,
+    connectionTimeoutMillis: isServerless ? 5000 : 8000,
     idleTimeoutMillis: isServerless ? 10000 : 30000,
     max: isServerless ? 1 : 10,
+    allowExitOnIdle: isServerless,
   };
 
   if (isSupabaseUrl(connectionString)) {

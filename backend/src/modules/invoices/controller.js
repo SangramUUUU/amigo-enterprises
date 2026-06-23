@@ -1,8 +1,6 @@
 const invoiceService = require('./service');
 const { getOrgSettings } = require('../orgSettings/service');
 const { buildInvoiceViewModel } = require('./invoiceViewModel');
-const { renderInvoicePdf } = require('./pdfRenderer');
-const { buildInvoiceDocx } = require('./docRenderer');
 const { writeAuditLog } = require('../../middleware/auditLog');
 const {
   buildInvoiceExportFilename,
@@ -115,6 +113,7 @@ async function exportPdf(req, res, next) {
     }
     const org = await getOrgSettings();
     const viewModel = buildInvoiceViewModel(invoice, invoice.line_items, org);
+    const { renderInvoicePdf } = require('./pdfRenderer');
     const buffer = await renderInvoicePdf(viewModel);
     const filename = buildInvoiceExportFilename({
       prefix: org.invoice_number_prefix,
@@ -138,6 +137,7 @@ async function exportDoc(req, res, next) {
     }
     const org = await getOrgSettings();
     const viewModel = buildInvoiceViewModel(invoice, invoice.line_items, org);
+    const { buildInvoiceDocx } = require('./docRenderer');
     const buffer = await buildInvoiceDocx(viewModel);
     const filename = buildInvoiceExportFilename({
       prefix: org.invoice_number_prefix,

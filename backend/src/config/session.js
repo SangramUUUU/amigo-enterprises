@@ -6,11 +6,12 @@ const { sessionSecret, sessionMaxAgeMs, nodeEnv } = require('./env');
 const PgSession = connectPgSimple(session);
 
 function createSessionMiddleware() {
+  const isServerless = Boolean(process.env.VERCEL);
   return session({
     store: new PgSession({
       pool,
       tableName: 'session',
-      createTableIfMissing: true,
+      createTableIfMissing: !isServerless,
       errorLog: (...args) => console.error('[session-store]', ...args),
     }),
     secret: sessionSecret,

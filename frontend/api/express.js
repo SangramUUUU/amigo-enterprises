@@ -1,52 +1,7 @@
 const serverless = require('serverless-http');
+const { restoreVercelPath } = require('../../backend/src/middleware/vercelPathFix');
 
 let handler;
-
-function fixVercelPath(req) {
-  if (!process.env.VERCEL) return;
-
-  const url = req.url || '/';
-
-  if (url.startsWith('/api/') && !url.startsWith('/api/express')) {
-    return;
-  }
-
-  try {
-    const parsed = new URL(url, 'http://localhost');
-    const pathParam = parsed.searchParams.get('path');
-    if (pathParam) {
-      parsed.searchParams.delete('path');
-      const qs = parsed.searchParams.toString();
-      req.url = `/api/${pathParam}${qs ? `?${qs}` : ''}`;
-      return;
-    }
-  } catch (_) {
-    /* continue */
-  }
-
-  const candidates = [
-    req.headers['x-vercel-original-url'],
-    req.headers['x-original-url'],
-    req.headers['x-forwarded-uri'],
-    req.headers['x-invoke-path'],
-    req.headers['x-matched-path'],
-  ];
-
-  for (const raw of candidates) {
-    if (!raw || typeof raw !== 'string') continue;
-    try {
-      const pathname = raw.startsWith('http')
-        ? new URL(raw).pathname + new URL(raw).search
-        : raw;
-      if (pathname.startsWith('/api/') && !pathname.startsWith('/api/express')) {
-        req.url = pathname;
-        return;
-      }
-    } catch (_) {
-      /* try next */
-    }
-  }
-}
 
 function getHandler() {
   if (!handler) {
@@ -57,12 +12,25 @@ function getHandler() {
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/octet-stream',
       ],
+      request(request, event) {
+        restoreVercelPath(request);
+        if (event?.url) {
+          try {
+            const parsed = new URL(event.url, 'http://localhost');
+            if (
+              parsed.pathname.startsWith('/api/')
+              && !parsed.pathname.startsWith('/api/express')
+            ) {
+              request.url = parsed.pathname + parsed.search;
+            }
+          } catch (_) {
+            /* ignore */
+          }
+        }
+      },
     });
   }
   return handler;
 }
 
-module.exports = (req, res) => {
-  fixVercelPath(req);
-  return getHandler()(req, res);
-};
+module.exports = (req, res) => getHandler()(req, res);
