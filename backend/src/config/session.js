@@ -11,10 +11,12 @@ function createSessionMiddleware() {
       pool,
       tableName: 'session',
       createTableIfMissing: true,
+      errorLog: (...args) => console.error('[session-store]', ...args),
     }),
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       maxAge: sessionMaxAgeMs,
       httpOnly: true,

@@ -4,17 +4,11 @@
   "outputDirectory": ".next",
   "installCommand": "npm install && npm install --prefix ../backend",
   "functions": {
-    "api/index.js": {
+    "api/[[...path]].js": {
       "maxDuration": 10,
       "includeFiles": "../backend/**"
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "/api"
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron/daily",

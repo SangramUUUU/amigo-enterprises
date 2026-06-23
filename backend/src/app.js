@@ -46,7 +46,28 @@ app.use(express.json({ limit: '10mb' }));
 
 // Keep health/cron before session middleware so they don't block on Postgres.
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: {
+      hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
+      nodeEnv: process.env.NODE_ENV || 'development',
+    },
+  });
+});
+
+app.get('/api/health/db', async (req, res) => {
+  const pool = require('./db/pool');
+  try {
+    const { rows } = await pool.query('SELECT 1 AS ok');
+    res.json({ status: 'ok', db: 'connected', result: rows[0] });
+  } catch (err) {
+    res.status(503).json({
+      status: 'error',
+      db: 'unreachable',
+      message: err.message,
+    });
+  }
 });
 
 app.get('/api/cron/daily', async (req, res, next) => {
