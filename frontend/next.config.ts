@@ -5,13 +5,15 @@ const backendPort = process.env.BACKEND_PORT || "4020";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    if (process.env.VERCEL) return [];
-    return [
-      {
-        source: "/api/:path*",
-        destination: `http://${backendHost}:${backendPort}/api/:path*`,
-      },
-    ];
+    if (process.env.VERCEL) return { beforeFiles: [], afterFiles: [], fallback: [] };
+    return {
+      beforeFiles: [
+        {
+          source: "/api/:path*",
+          destination: `http://${backendHost}:${backendPort}/api/:path*`,
+        },
+      ],
+    };
   },
 };
 

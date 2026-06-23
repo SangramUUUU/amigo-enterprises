@@ -2,22 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install && npm install --prefix ../backend",
+  "installCommand": "npm ci || npm install && (npm ci --prefix ../backend || npm install --prefix ../backend)",
   "functions": {
     "api/health.js": {
       "maxDuration": 10
     },
-    "api/express.js": {
+    "api/[...path].js": {
       "maxDuration": 10,
       "includeFiles": "../backend/**"
     }
   },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/express?path=$1"
-    }
-  ],
   "crons": [
     {
       "path": "/api/cron/daily",
