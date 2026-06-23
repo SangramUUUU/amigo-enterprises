@@ -43,8 +43,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
-app.use(createSessionMiddleware());
 
+// Keep health/cron before session middleware so they don't block on Postgres.
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
@@ -63,6 +63,8 @@ app.get('/api/cron/daily', async (req, res, next) => {
     next(err);
   }
 });
+
+app.use(createSessionMiddleware());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

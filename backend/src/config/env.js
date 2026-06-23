@@ -1,5 +1,10 @@
+const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+
+const envPath = path.join(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+}
 
 function requireEnv(name) {
   const value = process.env[name];

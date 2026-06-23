@@ -17,7 +17,13 @@ function normalizeConnectionString(connectionString) {
 
 function createPoolConfig(connectionString = databaseUrl) {
   const normalized = normalizeConnectionString(connectionString);
-  const config = { connectionString: normalized };
+  const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  const config = {
+    connectionString: normalized,
+    connectionTimeoutMillis: 8000,
+    idleTimeoutMillis: isServerless ? 10000 : 30000,
+    max: isServerless ? 1 : 10,
+  };
 
   if (isSupabaseUrl(connectionString)) {
     config.ssl = { rejectUnauthorized: false };
