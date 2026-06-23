@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+const backendHost = process.env.BACKEND_HOST || "127.0.0.1";
 const backendPort = process.env.BACKEND_PORT || "4020";
 
 const nextConfig: NextConfig = {
@@ -8,7 +9,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `http://localhost:${backendPort}/api/:path*`,
+        destination: `http://${backendHost}:${backendPort}/api/:path*`,
       },
     ];
   },

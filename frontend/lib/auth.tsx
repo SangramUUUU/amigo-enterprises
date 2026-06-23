@@ -22,12 +22,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const refresh = useCallback(async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     try {
-      const data = await api<{ user: User }>('/auth/me');
+      const data = await api<{ user: User }>('/auth/me', { signal: controller.signal });
       setUser(data.user);
     } catch {
       setUser(null);
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   }, []);

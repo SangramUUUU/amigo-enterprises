@@ -6,6 +6,7 @@ import { Box, Button, Paper, TextField, Typography, Alert, alpha } from '@mui/ma
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { useAuth } from '@/lib/auth';
 import { ApiError } from '@/lib/api';
+import LoadingState from '@/components/ui/LoadingState';
 
 export default function LoginPage() {
   const { login, loading, user } = useAuth();
@@ -14,7 +15,23 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 45%, #42a5f5 100%)',
+        }}
+      >
+        <Paper sx={{ p: 4, borderRadius: 4 }}>
+          <LoadingState label="Loading login..." />
+        </Paper>
+      </Box>
+    );
+  }
   if (user) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
