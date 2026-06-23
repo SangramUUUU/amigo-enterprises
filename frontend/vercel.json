@@ -4,6 +4,9 @@
   "outputDirectory": ".next",
   "installCommand": "npm install && npm install --prefix ../backend",
   "functions": {
+    "api/health.js": {
+      "maxDuration": 10
+    },
     "api/express.js": {
       "maxDuration": 10,
       "includeFiles": "../backend/**"

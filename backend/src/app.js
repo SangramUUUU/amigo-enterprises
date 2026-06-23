@@ -50,6 +50,8 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
+    handler: 'express',
+    path: req.url,
     timestamp: new Date().toISOString(),
     env: {
       hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
