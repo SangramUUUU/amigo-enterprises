@@ -7,11 +7,17 @@
     "api/health.js": {
       "maxDuration": 10
     },
-    "api/[...path].js": {
+    "api/handler.js": {
       "maxDuration": 10,
       "includeFiles": "../backend/**"
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/handler?path=$1"
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/daily",

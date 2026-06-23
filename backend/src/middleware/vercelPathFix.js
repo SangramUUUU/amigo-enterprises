@@ -1,13 +1,19 @@
 /**
- * Vercel rewrites /api/* to /api/express?path=..., so Express sees the wrong path.
+ * Vercel rewrites /api/* to /api/handler?path=..., so Express sees the wrong path.
  * Restore the original /api/... path before routing.
  */
+const HANDLER_PREFIXES = ['/api/handler', '/api/express'];
+
+function isHandlerPath(pathname) {
+  return HANDLER_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}?`));
+}
+
 function restoreVercelPath(req) {
   if (!process.env.VERCEL || !req) return;
 
   const current = req.url || '';
 
-  if (current.startsWith('/api/') && !current.startsWith('/api/express')) {
+  if (current.startsWith('/api/') && !isHandlerPath(current.split('?')[0])) {
     return;
   }
 
@@ -38,7 +44,7 @@ function restoreVercelPath(req) {
       const pathname = raw.startsWith('http')
         ? new URL(raw).pathname + new URL(raw).search
         : raw;
-      if (pathname.startsWith('/api/') && !pathname.startsWith('/api/express')) {
+      if (pathname.startsWith('/api/') && !isHandlerPath(pathname.split('?')[0])) {
         req.url = pathname;
         return;
       }
@@ -54,7 +60,7 @@ function vercelPathFix(req, res, next) {
 }
 
 function vercelPathGuard(req, res, next) {
-  if (process.env.VERCEL && req.url?.startsWith('/api/express')) {
+  if (process.env.VERCEL && isHandlerPath((req.url || '').split('?')[0])) {
     return res.status(404).json({ error: 'PATH_NOT_RESTORED', url: req.url });
   }
   next();
